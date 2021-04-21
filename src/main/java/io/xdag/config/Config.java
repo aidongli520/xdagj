@@ -27,7 +27,7 @@ import cn.hutool.setting.Setting;
 import io.xdag.crypto.DnetKeys;
 import io.xdag.crypto.jni.Native;
 
-import java.io.File;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,8 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
 
-import io.xdag.discovery.peers.DiscoveryPeer;
-import io.xdag.discovery.peers.Endpoint;
+
 import io.xdag.utils.discoveryutils.bytes.BytesValue;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

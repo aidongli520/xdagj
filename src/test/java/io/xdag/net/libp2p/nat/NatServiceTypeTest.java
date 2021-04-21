@@ -21,38 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.xdag.core;
+package io.xdag.net.libp2p.nat;
 
-import io.xdag.net.libp2p.peer.Libp2pNode;
-import io.xdag.net.node.Node;
-import lombok.Getter;
-import lombok.Setter;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-@Getter
-@Setter
-public class BlockWrapper implements Cloneable {
-    private Block block;
-    private int ttl;
-    /** 记录区块接收节点 */
-    private Node remoteNode;
-    private Libp2pNode libp2pNode;
-    // NO_PARENT waiting time
-    private long time;
+import java.util.Arrays;
+import java.util.Collection;
 
-    public BlockWrapper(Block block, int ttl, Node remoteNode) {
-        this.block = block;
-        this.ttl = ttl;
-        this.remoteNode = remoteNode;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@RunWith(value = Parameterized.class)
+public class NatServiceTypeTest {
+    private String natString;
+    private NatServiceType natServiceType;
+
+    public NatServiceTypeTest(String natString, NatServiceType natServiceType) {
+        this.natString = natString;
+        this.natServiceType = natServiceType;
     }
 
-    public BlockWrapper(Block block, int ttl) {
-        this.block = block;
-        this.ttl = ttl;
+    @Test
+    public void shouldAcceptValidValues() {
+        assertThat(NatServiceType.fromString(this.natString)).isEqualTo(this.natServiceType);
     }
 
-    public BlockWrapper(Block block, int ttl, Libp2pNode libp2pNode) {
-        this.block = block;
-        this.ttl = ttl;
-        this.libp2pNode = libp2pNode;
+    @Parameterized.Parameters(name = "Vector set {index} (natString={0}, natServiceType={1})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {
+                    "xdag_discovery",
+                    NatServiceType.XDAG_DISCOVERY,
+                }, {
+                    "xdag_p2p",
+                    NatServiceType.XDAG_P2P,
+                }
+        });
     }
 }

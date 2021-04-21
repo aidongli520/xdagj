@@ -21,38 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.xdag.core;
+package io.xdag.net.libp2p.nat;
 
-import io.xdag.net.libp2p.peer.Libp2pNode;
-import io.xdag.net.node.Node;
-import lombok.Getter;
-import lombok.Setter;
+public enum NatServiceType {
+    XDAG_DISCOVERY("xdag_discovery"),
+    XDAG_P2P("xdag_p2p");
+    private final String value;
 
-@Getter
-@Setter
-public class BlockWrapper implements Cloneable {
-    private Block block;
-    private int ttl;
-    /** 记录区块接收节点 */
-    private Node remoteNode;
-    private Libp2pNode libp2pNode;
-    // NO_PARENT waiting time
-    private long time;
-
-    public BlockWrapper(Block block, int ttl, Node remoteNode) {
-        this.block = block;
-        this.ttl = ttl;
-        this.remoteNode = remoteNode;
+    NatServiceType(final String value) {
+        this.value = value;
     }
 
-    public BlockWrapper(Block block, int ttl) {
-        this.block = block;
-        this.ttl = ttl;
+    public static NatServiceType fromString(final String natServiceTypeName) {
+        for (final NatServiceType mode : NatServiceType.values()) {
+            if (mode.getValue().equalsIgnoreCase(natServiceTypeName)) {
+                return mode;
+            }
+        }
+        throw new IllegalStateException(
+                String.format("Invalid NAT service type provided: %s", natServiceTypeName));
     }
 
-    public BlockWrapper(Block block, int ttl, Libp2pNode libp2pNode) {
-        this.block = block;
-        this.ttl = ttl;
-        this.libp2pNode = libp2pNode;
+    public String getValue() {
+        return value;
     }
 }

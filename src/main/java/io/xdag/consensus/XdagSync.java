@@ -41,8 +41,8 @@ import javax.annotation.Nonnull;
 
 import com.google.common.util.concurrent.*;
 
-import io.xdag.libp2p.Libp2pChannel;
-import io.xdag.libp2p.manager.ChannelManager;
+import io.xdag.net.libp2p.Libp2pChannel;
+import io.xdag.net.libp2p.manager.ChannelManager;
 
 import io.xdag.Kernel;
 import io.xdag.db.store.BlockStore;

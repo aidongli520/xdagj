@@ -21,38 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.xdag.core;
+package io.xdag.net.libp2p.nat;
 
-import io.xdag.net.libp2p.peer.Libp2pNode;
-import io.xdag.net.node.Node;
-import lombok.Getter;
-import lombok.Setter;
+public class NatConfiguration {
+    private final NatMethod natMethod;
 
-@Getter
-@Setter
-public class BlockWrapper implements Cloneable {
-    private Block block;
-    private int ttl;
-    /** 记录区块接收节点 */
-    private Node remoteNode;
-    private Libp2pNode libp2pNode;
-    // NO_PARENT waiting time
-    private long time;
-
-    public BlockWrapper(Block block, int ttl, Node remoteNode) {
-        this.block = block;
-        this.ttl = ttl;
-        this.remoteNode = remoteNode;
+    private NatConfiguration(final NatMethod natMethod) {
+        this.natMethod = natMethod;
     }
 
-    public BlockWrapper(Block block, int ttl) {
-        this.block = block;
-        this.ttl = ttl;
+    public NatMethod getNatMethod() {
+        return natMethod;
     }
 
-    public BlockWrapper(Block block, int ttl, Libp2pNode libp2pNode) {
-        this.block = block;
-        this.ttl = ttl;
-        this.libp2pNode = libp2pNode;
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        public Builder() {};
+
+        private NatMethod natMethod;
+
+        public Builder natMethod(final NatMethod natMethod) {
+            this.natMethod = natMethod;
+            return this;
+        }
+
+        public NatConfiguration build() {
+            return new NatConfiguration(natMethod);
+        }
     }
 }
+

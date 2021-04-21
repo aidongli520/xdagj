@@ -33,11 +33,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import io.xdag.config.Config;
 import io.xdag.core.*;
 
 import io.xdag.crypto.Hash;
-import io.xdag.libp2p.manager.ChannelManager;
+import io.xdag.net.libp2p.manager.ChannelManager;
 import io.xdag.listener.Listener;
 import io.xdag.randomx.RandomX;
 import io.xdag.randomx.RandomXMemory;

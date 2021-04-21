@@ -42,14 +42,10 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import io.libp2p.core.PeerId;
 import io.xdag.Kernel;
 import io.xdag.config.Config;
-import io.xdag.discovery.DiscoveryController;
-import io.xdag.discovery.peers.DiscoveryPeer;
-import io.xdag.discovery.peers.PeerTable;
-import io.xdag.libp2p.Libp2pChannel;
-import io.xdag.libp2p.Libp2pNetwork;
 
-import io.xdag.libp2p.manager.ChannelManager;
-import io.xdag.libp2p.peer.LibP2PNodeId;
+
+import io.xdag.net.libp2p.manager.ChannelManager;
+import io.xdag.net.libp2p.peer.LibP2PNodeId;
 import io.xdag.net.XdagChannel;
 import io.xdag.net.XdagClient;
 import io.xdag.net.handler.XdagChannelInitializer;
@@ -87,10 +83,9 @@ public class NodeManager {
     private ScheduledFuture<?> connectFuture;
     private ScheduledFuture<?> fetchFuture;
     private ScheduledFuture<?> connectlibp2pFuture;
-    private Set<DiscoveryPeer> hadConnectnode = new HashSet<>();
+
     private ChannelManager channelManager;
-    private DiscoveryController discoveryController;
-    Libp2pNetwork libp2pNetwork;
+
 
     public NodeManager(Kernel kernel) {
         this.kernel = kernel;
@@ -100,9 +95,9 @@ public class NodeManager {
         this.exec = new ScheduledThreadPoolExecutor(1, factory);
         this.config = kernel.getConfig();
         this.netDBManager = kernel.getNetDBMgr();
-        this.discoveryController = kernel.getDiscoveryController();
+
         this.channelManager = kernel.getChannelManager();
-        libp2pNetwork = kernel.getLibp2pNetwork();
+
     }
 
     /** start the node manager */
@@ -209,29 +204,7 @@ public class NodeManager {
             client.connect(ip, port, initializer);
         }
     }
-    //todo :加一个不能重复连接的逻辑
-    public void doConnectlibp2p(){
-        List<Libp2pChannel> libp2pChannels = kernel.getChannelManager().getactiveChannel();
-        Stream<Node> nodes = libp2pChannels.stream().map(Libp2pChannel::getNode);
-        PeerTable peerTable = kernel.getDiscoveryController().getPeerTable();
-        Collection<DiscoveryPeer> discoveryPeers = peerTable.getAllPeers();
-        List<DiscoveryPeer> discoveryPeers1 = new ArrayList<>(discoveryPeers);
-        for (DiscoveryPeer d : discoveryPeers1) {
-            if ((d.getEndpoint().getHost().equals(kernel.getDiscoveryController().getMynode().getHost())
-                    && (d.getEndpoint().getTcpPort().equals(kernel.getDiscoveryController().getMynode().getTcpPort())))
-                    || hadConnectnode.contains(d) ||
-                    nodes.anyMatch(a -> a.equals(new Node(d.getEndpoint().getHost(), d.getEndpoint().getTcpPort().getAsInt())))) {
-                continue;
-            }
-            StringBuilder stringBuilder = new StringBuilder();
-//       连接格式 ("/ip4/192.168.3.5/tcp/11112/ipfs/16Uiu2HAmRfT8vNbCbvjQGsfqWUtmZvrj5y8XZXiyUz6HVSqZW8gy")
-            String id = new LibP2PNodeId(PeerId.fromHex(Hex.toHexString(d.getId().extractArray()))).toString();
-            stringBuilder.append("/ip4/").append(d.getEndpoint().getHost()).append("/tcp/").append(d.getEndpoint().getTcpPort().getAsInt()).
-                    append("/ipfs/").append(id);
-            kernel.getLibp2pNetwork().dail(stringBuilder.toString());
-            hadConnectnode.add(d);
-        }
-    }
+
 
     public Set<Node> getNewNode() {
         return netDB.getIPList();
@@ -247,14 +220,5 @@ public class NodeManager {
         }
         return nodes;
     }
-    public Map<Node, Long> getActiveNode0() {
-        Map<Node, Long> nodes = new HashMap<>();
-        List<Libp2pChannel> activeAddress = channelManager.getactiveChannel();
-        for (Libp2pChannel address : activeAddress) {
-            Node node = address.getNode();
-            Long time = lastConnect.getIfPresent(node);
-            nodes.put(node, time);
-        }
-        return nodes;
-    }
+
 }
